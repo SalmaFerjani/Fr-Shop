@@ -1,0 +1,177 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}À propos - La Boutique Française{% endblock %}
+
+{% block body %}
+    <!-- Hero Section -->
+    <section class="hero-section">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-lg-6">
+                    <h1 class="display-4 fw-bold mb-4">Notre Histoire</h1>
+                    <p class="lead mb-4">
+                        Découvrez l'histoire de La Boutique Française et notre passion pour l'artisanat d'exception.
+                    </p>
+                </div>
+                <div class="col-lg-6 text-center">
+                    <i class="fas fa-heart" style="font-size: 8rem; opacity: 0.3;"></i>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- About Content -->
+    <section class="py-5">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-8 mx-auto">
+                    <div class="card">
+                        <div class="card-body">
+                            <h2 class="mb-4">La Boutique Française</h2>
+                            
+                            <p class="lead mb-4">
+                                Fondée en 2020, La Boutique Française est née d'une passion pour l'artisanat d'exception 
+                                et d'un désir de promouvoir le savoir-faire français dans le domaine de la mode et des accessoires.
+                            </p>
+
+                            <h3 class="mb-3">Notre Mission</h3>
+                            <p class="mb-4">
+                                Notre mission est de proposer des articles de qualité représentant le savoir-faire français, 
+                                accessibles à tous, et de promouvoir les artisans locaux. Nous sélectionnons avec soin chaque 
+                                produit pour vous garantir une qualité irréprochable et un design unique.
+                            </p>
+
+                            <h3 class="mb-3">Nos Valeurs</h3>
+                            <div class="row mb-4">
+                                <div class="col-md-6 mb-3">
+                                    <div class="d-flex align-items-start">
+                                        <i class="fas fa-flag text-primary me-3 mt-1"></i>
+                                        <div>
+                                            <h5>Made in France</h5>
+                                            <p class="text-muted">Tous nos produits sont fabriqués en France, soutenant ainsi l'économie locale et l'emploi.</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <div class="d-flex align-items-start">
+                                        <i class="fas fa-leaf text-primary me-3 mt-1"></i>
+                                        <div>
+                                            <h5>Développement Durable</h5>
+                                            <p class="text-muted">Nous privilégions les matériaux écologiques et les pratiques respectueuses de l'environnement.</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <div class="d-flex align-items-start">
+                                        <i class="fas fa-hands text-primary me-3 mt-1"></i>
+                                        <div>
+                                            <h5>Artisanat</h5>
+                                            <p class="text-muted">Chaque pièce est créée avec passion par des artisans qualifiés et expérimentés.</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <div class="d-flex align-items-start">
+                                        <i class="fas fa-users text-primary me-3 mt-1"></i>
+                                        <div>
+                                            <h5>Service Client</h5>
+                                            <p class="text-muted">Une équipe dédiée pour vous accompagner et vous conseiller dans vos choix.</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <h3 class="mb-3">Nos Produits</h3>
+                            <p class="mb-4">
+                                Nous proposons une sélection soigneusement choisie de sacs et bijoux, alliant élégance, 
+                                qualité et originalité. Chaque produit raconte une histoire et reflète l'excellence du 
+                                savoir-faire français.
+                            </p>
+
+                            <div class="row mb-4">
+                                <div class="col-md-6">
+                                    <h5><i class="fas fa-shopping-bag me-2"></i>Sacs</h5>
+                                    <p class="text-muted">
+                                        Des sacs élégants et fonctionnels, fabriqués avec des matériaux nobles 
+                                        et des finitions soignées. Du sac de jour au sac de soirée, nous avons 
+                                        ce qu'il vous faut pour toutes les occasions.
+                                    </p>
+                                </div>
+                                <div class="col-md-6">
+                                    <h5><i class="fas fa-gem me-2"></i>Bijoux</h5>
+                                    <p class="text-muted">
+                                        Des bijoux uniques et raffinés, créés par des artisans joailliers 
+                                        passionnés. Chaque pièce est une œuvre d'art qui sublimera votre tenue.
+                                    </p>
+                                </div>
+                            </div>
+
+                            <h3 class="mb-3">Notre Engagement</h3>
+                            <p class="mb-4">
+                                Nous nous engageons à vous proposer des produits de qualité, fabriqués dans le respect 
+                                des traditions artisanales françaises. Chaque achat contribue à soutenir nos artisans 
+                                et à préserver ce savoir-faire unique.
+                            </p>
+
+                            <div class="text-center">
+                                <a href="{{ path('app_products') }}" class="btn btn-primary btn-lg">
+                                    <i class="fas fa-store me-2"></i>Découvrir nos produits
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Team Section -->
+    <section class="py-5 bg-light">
+        <div class="container">
+            <div class="row">
+                <div class="col-12 text-center mb-5">
+                    <h2 class="display-6 fw-bold">Notre Équipe</h2>
+                    <p class="lead text-muted">Des passionnés à votre service</p>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-lg-4 col-md-6 mb-4 text-center">
+                    <div class="card h-100">
+                        <div class="card-body">
+                            <div class="mb-3">
+                                <i class="fas fa-user-tie text-primary" style="font-size: 3rem;"></i>
+                            </div>
+                            <h5>Marie Dupont</h5>
+                            <p class="text-muted">Fondatrice & Directrice</p>
+                            <p class="small">Passionnée de mode et d'artisanat, Marie a créé La Boutique Française pour promouvoir l'excellence française.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-4 col-md-6 mb-4 text-center">
+                    <div class="card h-100">
+                        <div class="card-body">
+                            <div class="mb-3">
+                                <i class="fas fa-palette text-primary" style="font-size: 3rem;"></i>
+                            </div>
+                            <h5>Sophie Martin</h5>
+                            <p class="text-muted">Directrice Artistique</p>
+                            <p class="small">Sophie sélectionne avec soin chaque produit pour vous garantir des créations uniques et élégantes.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-4 col-md-6 mb-4 text-center">
+                    <div class="card h-100">
+                        <div class="card-body">
+                            <div class="mb-3">
+                                <i class="fas fa-headset text-primary" style="font-size: 3rem;"></i>
+                            </div>
+                            <h5>Thomas Bernard</h5>
+                            <p class="text-muted">Service Client</p>
+                            <p class="small">Thomas et son équipe sont là pour vous accompagner et vous conseiller dans vos choix.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+{% endblock %} 

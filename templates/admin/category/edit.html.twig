@@ -1,0 +1,33 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Admin - Modifier catégorie{% endblock %}
+
+{% block body %}
+<div class="container py-5">
+    <h1 class="h3 mb-4">Modifier catégorie</h1>
+    <div class="card">
+        <div class="card-body">
+            {{ form_start(form, {'attr': {'enctype': 'multipart/form-data'}}) }}
+            
+            <!-- Affichage de l'image actuelle -->
+            {% if category.image %}
+                <div class="mb-3">
+                    <label class="form-label">Image actuelle :</label>
+                    <div>
+                        <img src="{{ category.image }}" alt="Image actuelle" class="image-preview" style="max-width: 200px; max-height: 200px;">
+                    </div>
+                </div>
+            {% endif %}
+            
+            {{ form_widget(form) }}
+            <div class="mt-3 d-flex gap-2">
+                <button type="submit" class="btn btn-primary">Mettre à jour</button>
+                <a href="{{ path('admin_category_index') }}" class="btn btn-outline-secondary">Retour</a>
+            </div>
+            {{ form_end(form) }}
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+

@@ -1,0 +1,42 @@
+# Symfony
+/var/
+/vendor/
+.env
+.env.local
+.env.*.local
+
+# Docker
+.docker/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+# Cache
+/var/cache/
+/var/log/
+
+# Uploads (optionnel - garder les images de test)
+# /public/uploads/
+
+# Node modules (si présent)
+node_modules/
+
+# Composer
+composer.phar
+
+# PHPUnit
+.phpunit.result.cache
+
+# Backup files
+*.bak
+*.backup

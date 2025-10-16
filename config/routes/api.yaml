@@ -1,0 +1,22 @@
+# Routes API
+api_products:
+    path: /api/products
+    controller: App\Controller\ProductController::apiIndex
+    methods: [GET]
+
+api_product_show:
+    path: /api/products/{id}
+    controller: App\Controller\ProductController::apiShow
+    methods: [GET]
+    requirements:
+        id: '\d+'
+
+api_doc:
+    path: /api/doc
+    controller: App\Controller\SwaggerController::index
+    methods: [GET]
+
+api_spec:
+    path: /api/spec
+    controller: App\Controller\ApiSpecController::spec
+    methods: [GET]

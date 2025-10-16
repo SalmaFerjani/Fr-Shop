@@ -1,0 +1,230 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Contact - La Boutique Française{% endblock %}
+
+{% block body %}
+    <!-- Hero Section -->
+    <section class="hero-section">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-lg-6">
+                    <h1 class="display-4 fw-bold mb-4">Contactez-nous</h1>
+                    <p class="lead mb-4">
+                        Notre équipe est là pour vous accompagner et répondre à toutes vos questions.
+                    </p>
+                </div>
+                <div class="col-lg-6 text-center">
+                    <i class="fas fa-envelope" style="font-size: 8rem; opacity: 0.3;"></i>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact Content -->
+    <section class="py-5">
+        <div class="container">
+            <div class="row">
+                <!-- Contact Information -->
+                <div class="col-lg-4 mb-4">
+                    <div class="card h-100">
+                        <div class="card-body">
+                            <h3 class="card-title mb-4">
+                                <i class="fas fa-info-circle me-2"></i>Informations
+                            </h3>
+                            
+                            <div class="mb-4">
+                                <h5><i class="fas fa-map-marker-alt text-primary me-2"></i>Adresse</h5>
+                                <p class="text-muted">
+                                    123 Rue de la Mode<br>
+                                    75001 Paris, France
+                                </p>
+                            </div>
+
+                            <div class="mb-4">
+                                <h5><i class="fas fa-phone text-primary me-2"></i>Téléphone</h5>
+                                <p class="text-muted">
+                                    <a href="tel:+33123456789" class="text-decoration-none">+33 1 23 45 67 89</a>
+                                </p>
+                            </div>
+
+                            <div class="mb-4">
+                                <h5><i class="fas fa-envelope text-primary me-2"></i>Email</h5>
+                                <p class="text-muted">
+                                    <a href="mailto:contact@boutiquefrancaise.fr" class="text-decoration-none">contact@boutiquefrancaise.fr</a>
+                                </p>
+                            </div>
+
+                            <div class="mb-4">
+                                <h5><i class="fas fa-clock text-primary me-2"></i>Horaires</h5>
+                                <p class="text-muted">
+                                    Lundi - Vendredi : 9h - 19h<br>
+                                    Samedi : 10h - 18h<br>
+                                    Dimanche : Fermé
+                                </p>
+                            </div>
+
+                            <div class="mb-4">
+                                <h5><i class="fas fa-share-alt text-primary me-2"></i>Réseaux sociaux</h5>
+                                <div class="d-flex gap-2">
+                                    <a href="#" class="btn btn-outline-primary btn-sm">
+                                        <i class="fab fa-facebook-f"></i>
+                                    </a>
+                                    <a href="#" class="btn btn-outline-primary btn-sm">
+                                        <i class="fab fa-instagram"></i>
+                                    </a>
+                                    <a href="#" class="btn btn-outline-primary btn-sm">
+                                        <i class="fab fa-twitter"></i>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Contact Form -->
+                <div class="col-lg-8">
+                    <div class="card">
+                        <div class="card-body">
+                            <h3 class="card-title mb-4">
+                                <i class="fas fa-paper-plane me-2"></i>Envoyez-nous un message
+                            </h3>
+
+                            <form>
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <label for="firstName" class="form-label">Prénom *</label>
+                                        <input type="text" class="form-control" id="firstName" name="firstName" required>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label for="lastName" class="form-label">Nom *</label>
+                                        <input type="text" class="form-control" id="lastName" name="lastName" required>
+                                    </div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <label for="email" class="form-label">Email *</label>
+                                        <input type="email" class="form-control" id="email" name="email" required>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label for="phone" class="form-label">Téléphone</label>
+                                        <input type="tel" class="form-control" id="phone" name="phone">
+                                    </div>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label for="subject" class="form-label">Sujet *</label>
+                                    <select class="form-select" id="subject" name="subject" required>
+                                        <option value="">Choisissez un sujet</option>
+                                        <option value="commande">Question sur une commande</option>
+                                        <option value="produit">Question sur un produit</option>
+                                        <option value="livraison">Livraison</option>
+                                        <option value="retour">Retour/Échange</option>
+                                        <option value="autre">Autre</option>
+                                    </select>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label for="message" class="form-label">Message *</label>
+                                    <textarea class="form-control" id="message" name="message" rows="5" required placeholder="Votre message..."></textarea>
+                                </div>
+
+                                <div class="mb-3 form-check">
+                                    <input type="checkbox" class="form-check-input" id="newsletter" name="newsletter">
+                                    <label class="form-check-label" for="newsletter">
+                                        Je souhaite recevoir la newsletter
+                                    </label>
+                                </div>
+
+                                <div class="mb-3 form-check">
+                                    <input type="checkbox" class="form-check-input" id="privacy" name="privacy" required>
+                                    <label class="form-check-label" for="privacy">
+                                        J'accepte la <a href="#" class="text-decoration-none">politique de confidentialité</a> *
+                                    </label>
+                                </div>
+
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="fas fa-paper-plane me-2"></i>Envoyer le message
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- FAQ Section -->
+    <section class="py-5 bg-light">
+        <div class="container">
+            <div class="row">
+                <div class="col-12 text-center mb-5">
+                    <h2 class="display-6 fw-bold">Questions Fréquentes</h2>
+                    <p class="lead text-muted">Trouvez rapidement une réponse à vos questions</p>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-lg-8 mx-auto">
+                    <div class="accordion" id="faqAccordion">
+                        <div class="accordion-item">
+                            <h2 class="accordion-header" id="faq1">
+                                <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapse1">
+                                    Comment passer une commande ?
+                                </button>
+                            </h2>
+                            <div id="collapse1" class="accordion-collapse collapse show" data-bs-parent="#faqAccordion">
+                                <div class="accordion-body">
+                                    Pour passer une commande, ajoutez les produits de votre choix au panier, 
+                                    puis suivez les étapes de validation. Vous devrez créer un compte ou vous connecter 
+                                    pour finaliser votre commande.
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="accordion-item">
+                            <h2 class="accordion-header" id="faq2">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse2">
+                                    Quels sont les délais de livraison ?
+                                </button>
+                            </h2>
+                            <div id="collapse2" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                                <div class="accordion-body">
+                                    Les délais de livraison varient entre 2 à 5 jours ouvrés en France métropolitaine. 
+                                    La livraison est gratuite dès 50€ d'achat.
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="accordion-item">
+                            <h2 class="accordion-header" id="faq3">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse3">
+                                    Comment retourner un produit ?
+                                </button>
+                            </h2>
+                            <div id="collapse3" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                                <div class="accordion-body">
+                                    Vous disposez de 14 jours pour retourner un produit. Contactez-nous via le formulaire 
+                                    de contact ou par téléphone pour organiser le retour.
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="accordion-item">
+                            <h2 class="accordion-header" id="faq4">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse4">
+                                    Tous vos produits sont-ils fabriqués en France ?
+                                </button>
+                            </h2>
+                            <div id="collapse4" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                                <div class="accordion-body">
+                                    Oui, tous nos produits sont fabriqués en France par des artisans qualifiés. 
+                                    Nous nous engageons à promouvoir le savoir-faire français.
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+{% endblock %} 

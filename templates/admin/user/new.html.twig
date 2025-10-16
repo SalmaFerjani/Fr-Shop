@@ -1,0 +1,75 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Nouvel Administrateur - La Boutique Française{% endblock %}
+
+{% block body %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-10">
+            <div class="form-section">
+                <div class="text-center mb-5">
+                    <h2 class="h3 mb-0">
+                        <i class="fas fa-user-shield me-2"></i>Créer un administrateur
+                    </h2>
+                    <p class="text-muted">Compte avec droits d'administration</p>
+                </div>
+
+                {{ form_start(registrationForm, {'attr': {'class': 'needs-validation', 'novalidate': true}}) }}
+                    <div class="row">
+                        <div class="col-md-6 mb-4">
+                            {{ form_row(registrationForm.firstName) }}
+                        </div>
+                        <div class="col-md-6 mb-4">
+                            {{ form_row(registrationForm.lastName) }}
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-4">
+                            {{ form_row(registrationForm.email) }}
+                        </div>
+                        <div class="col-md-6 mb-4">
+                            {{ form_row(registrationForm.phone) }}
+                        </div>
+                    </div>
+
+                    <div class="mb-4">
+                        {{ form_row(registrationForm.address) }}
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-4 mb-4">
+                            {{ form_row(registrationForm.postalCode) }}
+                        </div>
+                        <div class="col-md-4 mb-4">
+                            {{ form_row(registrationForm.city) }}
+                        </div>
+                        <div class="col-md-4 mb-4">
+                            {{ form_row(registrationForm.country) }}
+                        </div>
+                    </div>
+
+                    <div class="mb-4">
+                        {{ form_row(registrationForm.plainPassword) }}
+                    </div>
+
+                    <div class="mb-4 form-check">
+                        {{ form_row(registrationForm.agreeTerms, {
+                            'attr': {'class': 'form-check-input'},
+                            'label_attr': {'class': 'form-check-label'}
+                        }) }}
+                    </div>
+
+                    <div class="d-grid mb-4">
+                        <button type="submit" class="btn btn-primary btn-lg">
+                            <i class="fas fa-user-shield me-2"></i>Créer l'administrateur
+                        </button>
+                    </div>
+                {{ form_end(registrationForm) }}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+

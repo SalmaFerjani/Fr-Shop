@@ -1,0 +1,22 @@
+# Configuration pour les uploads d'images
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+</IfModule>
+
+# Autoriser l'accès aux fichiers d'images
+<FilesMatch "\.(jpg|jpeg|png|gif|webp)$">
+    Order Allow,Deny
+    Allow from all
+</FilesMatch>
+
+# Désactiver l'exécution de scripts dans le répertoire uploads
+<IfModule mod_php.c>
+    php_flag engine off
+</IfModule>
+
+# Headers pour les images
+<IfModule mod_headers.c>
+    <FilesMatch "\.(jpg|jpeg|png|gif|webp)$">
+        Header set Cache-Control "public, max-age=31536000"
+    </FilesMatch>
+</IfModule>

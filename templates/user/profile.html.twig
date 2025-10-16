@@ -1,0 +1,51 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Mon Profil - La Boutique Française{% endblock %}
+
+{% block body %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header">
+                    <h4 class="mb-0">
+                        <i class="fas fa-user-edit me-2"></i>Mon profil
+                    </h4>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <p><strong>Prénom :</strong> {{ user.firstName }}</p>
+                            <p><strong>Nom :</strong> {{ user.lastName }}</p>
+                            <p><strong>Email :</strong> {{ user.email }}</p>
+                        </div>
+                        <div class="col-md-6">
+                            {% if user.phone %}
+                                <p><strong>Téléphone :</strong> {{ user.phone }}</p>
+                            {% endif %}
+                            {% if user.address %}
+                                <p><strong>Adresse :</strong> {{ user.address }}</p>
+                            {% endif %}
+                            {% if user.city %}
+                                <p><strong>Ville :</strong> {{ user.city }} {{ user.postalCode }}</p>
+                            {% endif %}
+                            {% if user.country %}
+                                <p><strong>Pays :</strong> {{ user.country }}</p>
+                            {% endif %}
+                        </div>
+                    </div>
+                    <hr>
+                    <div class="d-flex gap-2">
+                        <a href="{{ path('user_dashboard') }}" class="btn btn-outline-secondary">
+                            <i class="fas fa-arrow-left me-2"></i>Retour au tableau de bord
+                        </a>
+                        <a href="{{ path('app_home') }}" class="btn btn-primary">
+                            <i class="fas fa-home me-2"></i>Accueil
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

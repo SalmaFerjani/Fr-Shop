@@ -1,0 +1,64 @@
+# =============================================================================
+# Dockerfile pour l'environnement de test - BoutiqueProd
+# =============================================================================
+
+FROM php:8.1-fpm-alpine
+
+# Installation des dépendances système pour MySQL
+RUN apk add --no-cache \
+    git \
+    curl \
+    libpng-dev \
+    libxml2-dev \
+    zip \
+    unzip \
+    mysql-client \
+    mysql-dev \
+    icu-dev \
+    oniguruma-dev \
+    freetype-dev \
+    libjpeg-turbo-dev \
+    libwebp-dev
+
+# Installation des extensions PHP (focus MySQL)
+RUN docker-php-ext-configure gd --with-freetype --with-jpeg --with-webp
+RUN docker-php-ext-install \
+    pdo \
+    pdo_mysql \
+    mbstring \
+    exif \
+    pcntl \
+    bcmath \
+    gd \
+    intl \
+    xml \
+    mysqli
+
+# Installation de Composer
+COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
+
+# Configuration du répertoire de travail
+WORKDIR /app
+
+# Copie du code source (incl. bin/console, etc.)
+COPY . .
+
+# Installation des dépendances composer (sans scripts automatiques)
+RUN composer install --dev --no-interaction --prefer-dist --no-scripts
+
+# Configuration de l'environnement pour le développement
+ENV APP_ENV=dev
+ENV APP_DEBUG=1
+
+# Configuration pour MySQL
+ENV DATABASE_URL="mysql://boutique:boutique@database:3306/boutique_prod?serverVersion=8.0"
+
+# Configuration des permissions
+RUN chown -R www-data:www-data /app/var
+
+# Exposé du port
+EXPOSE 8000
+
+# Commande par défaut
+CMD ["php", "-S", "0.0.0.0:8000", "-t", "public"]
+

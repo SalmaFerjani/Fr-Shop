@@ -1,0 +1,26 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Confirmer la commande {{ order.orderNumber }}{% endblock %}
+
+{% block body %}
+<div class="container py-5">
+    <h1 class="mb-4">
+        <i class="fas fa-clipboard-check me-2"></i>Confirmation de commande
+    </h1>
+
+    <div class="card">
+        <div class="card-body">
+            <p class="mb-3">Commande: <strong>{{ order.orderNumber }}</strong></p>
+            <p class="mb-4">Total TTC: <strong>{{ order.total|number_format(2, ',', ' ') }} €</strong></p>
+
+            <form method="post" action="{{ path('app_order_confirm', {orderNumber: order.orderNumber}) }}">
+                <button type="submit" class="btn btn-primary">
+                    <i class="fas fa-check me-2"></i>Confirmer ma commande
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+

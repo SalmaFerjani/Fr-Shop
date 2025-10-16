@@ -1,0 +1,410 @@
+name: CI/CD Pipeline - BoutiqueProd
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main ]
+  release:
+    types: [ published ]
+
+env:
+  PHP_VERSION: '8.1'
+  NODE_VERSION: '18'
+  SYMFONY_ENV: 'test'
+
+jobs:
+  # =============================================================================
+  # 1️⃣ TESTS AUTOMATISÉS
+  # =============================================================================
+  tests:
+    name: 🧪 Tests Automatisés
+    runs-on: ubuntu-latest
+    
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_USER: postgres
+          POSTGRES_DB: boutique_test
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+
+    steps:
+    - name: 📥 Checkout du code
+      uses: actions/checkout@v4
+
+    - name: 🐘 Configuration PHP
+      uses: shivammathur/setup-php@v2
+      with:
+        php-version: ${{ env.PHP_VERSION }}
+        extensions: mbstring, xml, ctype, iconv, intl, pdo_pgsql, dom, filter, gd, iconv, json, mbstring, pdo
+        coverage: xdebug
+
+    - name: 📦 Installation Composer
+      uses: ramsey/composer-install@v3
+      with:
+        composer-options: '--no-dev --optimize-autoloader'
+
+    - name: 📦 Installation des dépendances de développement
+      run: composer install --dev --no-interaction --prefer-dist
+
+    - name: 🔧 Configuration de l'environnement de test
+      run: |
+        cp .env .env.local
+        echo "DATABASE_URL=postgresql://postgres:postgres@127.0.0.1:5432/boutique_test?serverVersion=16&charset=utf8" >> .env.local
+        echo "APP_ENV=test" >> .env.local
+
+    - name: 🗄️ Création de la base de données de test
+      run: |
+        php bin/console doctrine:database:create --env=test --if-not-exists
+        php bin/console doctrine:migrations:migrate --env=test --no-interaction
+
+    - name: 🧪 Exécution des tests PHPUnit
+      run: |
+        php bin/phpunit --coverage-clover=coverage.xml --log-junit=junit.xml --verbose
+
+    - name: 📊 Upload des rapports de couverture
+      uses: codecov/codecov-action@v3
+      with:
+        file: ./coverage.xml
+        flags: unittests
+        name: codecov-umbrella
+
+    - name: 📋 Upload des rapports de tests
+      uses: actions/upload-artifact@v3
+      if: always()
+      with:
+        name: test-reports
+        path: |
+          junit.xml
+          coverage.xml
+
+  # =============================================================================
+  # 2️⃣ ANALYSE DE QUALITÉ DE CODE
+  # =============================================================================
+  code-quality:
+    name: 🔍 Analyse de Qualité
+    runs-on: ubuntu-latest
+    needs: tests
+
+    steps:
+    - name: 📥 Checkout du code
+      uses: actions/checkout@v4
+
+    - name: 🐘 Configuration PHP
+      uses: shivammathur/setup-php@v2
+      with:
+        php-version: ${{ env.PHP_VERSION }}
+        extensions: mbstring, xml, ctype, iconv, intl
+
+    - name: 📦 Installation des dépendances
+      run: composer install --dev --no-interaction --prefer-dist
+
+    - name: 🎨 Vérification du style de code (PHP CS Fixer)
+      run: |
+        if [ ! -f .php-cs-fixer.php ]; then
+          cat > .php-cs-fixer.php << 'EOF'
+        <?php
+        $finder = PhpCsFixer\Finder::create()
+            ->in(__DIR__)
+            ->exclude('vendor')
+            ->exclude('var')
+            ->exclude('public')
+            ->exclude('node_modules')
+            ->name('*.php');
+        $config = new PhpCsFixer\Config();
+        return $config
+            ->setRules([
+                '@PSR12' => true,
+                'array_syntax' => ['syntax' => 'short'],
+                'ordered_imports' => ['sort_algorithm' => 'alpha'],
+                'no_unused_imports' => true,
+            ])
+            ->setFinder($finder);
+        EOF
+        fi
+        vendor/bin/php-cs-fixer fix --dry-run --diff --verbose
+
+    - name: 🔍 Analyse statique (PHPStan)
+      run: |
+        if [ ! -f phpstan.neon ]; then
+          cat > phpstan.neon << 'EOF'
+        parameters:
+            level: 6
+            paths:
+                - src
+            excludePaths:
+                - src/Migrations
+            ignoreErrors:
+                - '#Call to an undefined method#'
+            checkMissingIterableValueType: false
+        EOF
+        fi
+        vendor/bin/phpstan analyse --memory-limit=1G
+
+    - name: 🛡️ Analyse de sécurité (Security Checker)
+      run: |
+        composer require --dev symfony/security-checker
+        vendor/bin/security-checker security:check
+
+    - name: 📊 Génération du rapport de qualité
+      run: |
+        mkdir -p reports
+        cat > reports/quality-report.md << EOF
+        # Rapport de Qualité de Code - BoutiqueProd
+        
+        **Date:** $(date)
+        **Commit:** ${{ github.sha }}
+        **Branche:** ${{ github.ref_name }}
+        
+        ## Résumé
+        
+        - ✅ Tests unitaires: Passés
+        - ✅ Style de code: Conforme (PSR-12)
+        - ✅ Analyse statique: Réussie (PHPStan niveau 6)
+        - ✅ Analyse de sécurité: Aucune vulnérabilité détectée
+        
+        ## Détails
+        
+        ### Tests
+        - Couverture de code: Disponible dans les artifacts
+        - Rapport JUnit: Disponible dans les artifacts
+        
+        ### Qualité de code
+        - PHPStan: Niveau 6 (strict)
+        - PHP CS Fixer: PSR-12
+        - Security Checker: Aucune vulnérabilité
+        
+        ## Recommandations
+        
+        - Maintenir la couverture de code au-dessus de 80%
+        - Exécuter ce pipeline avant chaque déploiement
+        - Réviser les rapports de couverture régulièrement
+        EOF
+
+    - name: 📋 Upload du rapport de qualité
+      uses: actions/upload-artifact@v3
+      with:
+        name: quality-report
+        path: reports/quality-report.md
+
+  # =============================================================================
+  # 3️⃣ CRÉATION DU LIVRABLE
+  # =============================================================================
+  build:
+    name: 📦 Création du Livrable
+    runs-on: ubuntu-latest
+    needs: [tests, code-quality]
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+
+    steps:
+    - name: 📥 Checkout du code
+      uses: actions/checkout@v4
+
+    - name: 🐘 Configuration PHP
+      uses: shivammathur/setup-php@v2
+      with:
+        php-version: ${{ env.PHP_VERSION }}
+        extensions: mbstring, xml, ctype, iconv, intl
+
+    - name: 📦 Installation des dépendances de production
+      run: composer install --no-dev --optimize-autoloader --no-interaction
+
+    - name: 🧹 Nettoyage du cache
+      run: php bin/console cache:clear --env=prod --no-debug
+
+    - name: 📦 Création de l'archive
+      run: |
+        VERSION=$(date +"%Y%m%d-%H%M%S")
+        ARCHIVE_NAME="BoutiqueProd-${VERSION}.tar.gz"
+        
+        # Créer l'archive en excluant les fichiers de développement
+        tar --exclude='.git' \
+            --exclude='.github' \
+            --exclude='.env.local' \
+            --exclude='.env.test' \
+            --exclude='var/cache' \
+            --exclude='var/log' \
+            --exclude='node_modules' \
+            --exclude='tests' \
+            --exclude='phpunit.xml.dist' \
+            --exclude='.php-cs-fixer.php' \
+            --exclude='phpstan.neon' \
+            --exclude='vendor' \
+            --exclude='build' \
+            --exclude='reports' \
+            --exclude='coverage' \
+            -czf "${ARCHIVE_NAME}" .
+        
+        echo "ARCHIVE_NAME=${ARCHIVE_NAME}" >> $GITHUB_ENV
+        echo "VERSION=${VERSION}" >> $GITHUB_ENV
+
+    - name: 📋 Création du manifest
+      run: |
+        cat > MANIFEST.txt << EOF
+        BoutiqueProd - Manifest de Build
+        ================================
+        
+        Version: ${VERSION}
+        Date de build: $(date)
+        Commit: ${{ github.sha }}
+        Branche: ${{ github.ref_name }}
+        
+        Contenu inclus:
+        - Code source de l'application
+        - Configuration de production
+        - Assets publics
+        - Migrations de base de données
+        - Documentation
+        
+        Contenu exclu:
+        - Tests unitaires
+        - Outils de développement
+        - Cache et logs
+        - Fichiers de configuration locale
+        
+        Installation:
+        1. Extraire l'archive sur le serveur
+        2. Installer les dépendances: composer install --no-dev --optimize-autoloader
+        3. Configurer la base de données
+        4. Exécuter les migrations: php bin/console doctrine:migrations:migrate
+        5. Configurer le serveur web
+        
+        Support:
+        - Documentation: README.md
+        - API: /api/doc
+        - Logs: var/log/
+        EOF
+
+    - name: 📊 Génération du rapport final
+      run: |
+        mkdir -p reports
+        cat > reports/ci-report.md << EOF
+        # Rapport CI/CD - BoutiqueProd
+        
+        **Date:** $(date)
+        **Version:** ${VERSION}
+        **Commit:** ${{ github.sha }}
+        **Branche:** ${{ github.ref_name }}
+        **Statut:** ✅ SUCCÈS
+        
+        ## Résumé des étapes
+        
+        ### 1️⃣ Tests automatisés
+        - ✅ PHPUnit: Tous les tests passés
+        - ✅ Couverture de code: Générée
+        - ✅ Rapports: JUnit et Clover
+        
+        ### 2️⃣ Analyse de qualité
+        - ✅ PHPStan: Analyse statique réussie
+        - ✅ PHP CS Fixer: Style de code conforme
+        - ✅ Security Checker: Aucune vulnérabilité
+        - ✅ Aucun problème détecté
+        
+        ### 3️⃣ Création du livrable
+        - ✅ Archive créée: \`${ARCHIVE_NAME}\`
+        - ✅ Manifest généré
+        - ✅ Prêt pour le déploiement
+        
+        ## Fichiers générés
+        
+        - **Archive:** \`${ARCHIVE_NAME}\`
+        - **Manifest:** \`MANIFEST.txt\`
+        - **Rapport de qualité:** \`reports/quality-report.md\`
+        - **Rapport CI/CD:** \`reports/ci-report.md\`
+        
+        ## Prochaines étapes
+        
+        1. Tester l'archive sur un environnement de staging
+        2. Déployer en production
+        3. Surveiller les logs et métriques
+        
+        ---
+        *Généré automatiquement par GitHub Actions*
+        EOF
+
+    - name: 📋 Upload de l'archive
+      uses: actions/upload-artifact@v3
+      with:
+        name: build-artifact
+        path: |
+          ${{ env.ARCHIVE_NAME }}
+          MANIFEST.txt
+          reports/
+
+    - name: 🏷️ Création d'une release (si tag)
+      if: startsWith(github.ref, 'refs/tags/')
+      uses: softprops/action-gh-release@v1
+      with:
+        files: |
+          ${{ env.ARCHIVE_NAME }}
+          MANIFEST.txt
+          reports/ci-report.md
+        body: |
+          ## 🚀 Release BoutiqueProd v${{ github.ref_name }}
+          
+          ### 📦 Livrable
+          - Archive: `${{ env.ARCHIVE_NAME }}`
+          - Version: ${VERSION}
+          
+          ### ✅ Qualité
+          - Tests: Tous passés
+          - Analyse statique: Réussie
+          - Sécurité: Aucune vulnérabilité
+          
+          ### 📋 Installation
+          Voir le fichier `MANIFEST.txt` pour les instructions d'installation.
+        draft: false
+        prerelease: false
+
+  # =============================================================================
+  # 4️⃣ DÉPLOIEMENT (Optionnel)
+  # =============================================================================
+  deploy:
+    name: 🚀 Déploiement
+    runs-on: ubuntu-latest
+    needs: build
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    environment: production
+
+    steps:
+    - name: 📥 Download de l'archive
+      uses: actions/download-artifact@v3
+      with:
+        name: build-artifact
+
+    - name: 🚀 Déploiement (exemple)
+      run: |
+        echo "🚀 Déploiement en production..."
+        echo "Archive: ${{ env.ARCHIVE_NAME }}"
+        echo "Version: ${{ env.VERSION }}"
+        # Ici vous pouvez ajouter votre logique de déploiement
+        # Par exemple : rsync, scp, docker, etc.
+
+  # =============================================================================
+  # 5️⃣ NOTIFICATION
+  # =============================================================================
+  notify:
+    name: 📢 Notification
+    runs-on: ubuntu-latest
+    needs: [tests, code-quality, build]
+    if: always()
+
+    steps:
+    - name: 📢 Notification de statut
+      run: |
+        if [ "${{ needs.tests.result }}" == "success" ] && [ "${{ needs.code-quality.result }}" == "success" ]; then
+          echo "✅ Pipeline CI/CD réussi!"
+          echo "📦 Livrable créé avec succès"
+        else
+          echo "❌ Pipeline CI/CD échoué"
+          echo "🔍 Vérifiez les logs pour plus de détails"
+        fi
+

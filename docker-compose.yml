@@ -1,0 +1,53 @@
+version: '3.8'
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile.test
+    ports:
+      - "8000:8000"
+    environment:
+      - APP_ENV=dev
+      - APP_DEBUG=1
+      - DATABASE_URL=mysql://boutique:boutique@database:3306/boutique_prod?serverVersion=8.0
+    depends_on:
+      database:
+        condition: service_healthy
+    volumes:
+      - ./public/uploads:/app/public/uploads
+    networks:
+      - boutique-network
+
+  database:
+    image: mysql:8.0
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: boutique_prod
+      MYSQL_USER: boutique
+      MYSQL_PASSWORD: boutique
+    ports:
+      - "3307:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "boutique", "-pboutique"]
+      timeout: 20s
+      retries: 10
+    networks:
+      - boutique-network
+
+  mailer:
+    image: axllent/mailpit
+    ports:
+      - "8025:8025"
+      - "1025:1025"
+    networks:
+      - boutique-network
+
+volumes:
+  mysql_data:
+
+networks:
+  boutique-network:
+    driver: bridge

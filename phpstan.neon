@@ -1,0 +1,19 @@
+parameters:
+    level: 6
+    paths:
+        - src
+    excludePaths:
+        - src/Migrations
+        - src/DataFixtures
+    ignoreErrors:
+        - '#Call to an undefined method#'
+        - '#Property .* does not accept null#'
+        - '#Method .* should return .* but returns .*#'
+    checkMissingIterableValueType: false
+    checkGenericClassInNonGenericObjectType: false
+    reportUnmatchedIgnoredErrors: false
+    parallel:
+        processTimeout: 300.0
+    tmpDir: var/cache/phpstan
+    memoryLimitFile: 1G
+

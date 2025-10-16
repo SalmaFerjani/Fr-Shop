@@ -1,0 +1,42 @@
+name: CI
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+
+jobs:
+  tests:
+    runs-on: ubuntu-latest
+    services:
+      mysql:
+        image: mysql:8
+        env:
+          MYSQL_ROOT_PASSWORD: root
+          MYSQL_DATABASE: test
+        ports: ["3306:3306"]
+        options: >-
+          --health-cmd "mysqladmin ping -h 127.0.0.1 -proot"
+          --health-interval 10s --health-timeout 5s --health-retries 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2'
+          extensions: mbstring, intl, pdo_mysql
+          coverage: none
+      - name: Copy .env.test.local
+        run: |
+          cp .env .env.test || true
+          echo "DATABASE_URL=mysql://root:root@127.0.0.1:3306/test" >> .env.test
+      - name: Install Composer dependencies
+        run: composer install --no-interaction --no-progress --prefer-dist
+      - name: Prepare database
+        run: |
+          php bin/console doctrine:database:create --env=test --if-not-exists
+          php bin/console doctrine:schema:update --force --env=test
+      - name: Run tests
+        run: ./bin/phpunit
+
+

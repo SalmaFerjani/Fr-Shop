@@ -1,0 +1,67 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Admin - Catégories{% endblock %}
+
+{% block body %}
+<div class="container py-5">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="h3">Catégories</h1>
+        <a href="{{ path('admin_category_new') }}" class="btn btn-primary">Nouveau</a>
+    </div>
+
+    <div class="card">
+        <div class="card-body table-responsive">
+            <table class="table align-middle">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Image</th>
+                        <th>Nom</th>
+                        <th>Actif</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                {% for category in categories %}
+                    <tr>
+                        <td>{{ category.id }}</td>
+                        <td>
+                            {% if category.image %}
+                                <img src="{{ category.image }}" alt="{{ category.name }}" class="img-thumbnail" style="max-width: 50px; max-height: 50px;">
+                            {% else %}
+                                <span class="text-muted">Aucune image</span>
+                            {% endif %}
+                        </td>
+                        <td>{{ category.name }}</td>
+                        <td>
+                            {% if category.isIsActive %}
+                                <span class="badge bg-success">Oui</span>
+                            {% else %}
+                                <span class="badge bg-secondary">Non</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <div class="btn-group" role="group">
+                                <a href="{{ path('admin_categories_edit', {id: category.id}) }}" class="btn btn-primary btn-sm" title="Modifier">
+                                    Modifier
+                                </a>
+                                <form method="post" action="{{ path('admin_categories_delete', {id: category.id}) }}" class="d-inline" onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer cette catégorie ? Cette action est irréversible.')">
+                                    <input type="hidden" name="_token" value="{{ csrf_token('delete_category_' ~ category.id) }}">
+                                    <button type="submit" class="btn btn-danger btn-sm" title="Supprimer">
+                                        Supprimer
+                                    </button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                {% else %}
+                    <tr><td colspan="4" class="text-center text-muted">Aucune catégorie</td></tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+

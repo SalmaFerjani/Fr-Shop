@@ -1,0 +1,150 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Boutique - La Boutique Française{% endblock %}
+
+{% block body %}
+    <!-- Page Header -->
+    <section class="py-5 bg-light">
+        <div class="container">
+            <div class="row">
+                <div class="col-12 text-center">
+                    <h1 class="display-5 fw-bold">Notre Boutique</h1>
+                    <p class="lead text-muted">
+                        {% if current_category is defined %}
+                            {{ current_category.name }}
+                        {% else %}
+                            Découvrez notre sélection de sacs et bijoux d'exception
+                        {% endif %}
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Filters and Search -->
+    <section class="py-4 section">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-3 sticky-lg">
+                    <!-- Search -->
+                    <div class="card mb-4">
+                        <div class="card-body">
+                            <h5 class="card-title">
+                                <i class="fas fa-search me-2"></i>Rechercher
+                            </h5>
+                            <form method="get" action="{{ path('app_products') }}">
+                                <div class="input-group">
+                                    <input type="text" name="search" class="form-control" placeholder="Nom du produit..." value="{{ search ?? '' }}">
+                                    <button class="btn btn-primary" type="submit">
+                                        <i class="fas fa-search"></i>
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+
+                    <!-- Categories Filter -->
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title">
+                                <i class="fas fa-tags me-2"></i>Catégories
+                            </h5>
+                            <div class="list-group list-group-flush">
+                                <a href="{{ path('app_products') }}" class="list-group-item list-group-item-action {% if not selected_category %}active{% endif %}">
+                                    <i class="fas fa-th-large me-2"></i>Toutes les catégories
+                                </a>
+                                {% for category in categories %}
+                                    <a href="{{ path('app_products_by_category', {'id': category.id}) }}" 
+                                       class="list-group-item list-group-item-action {% if selected_category == category.id %}active{% endif %}">
+                                        <i class="fas fa-tag me-2"></i>{{ category.name }}
+                                    </a>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Products Grid -->
+                <div class="col-lg-9">
+                    {% if products|length > 0 %}
+                        <div class="row">
+                            {% for product in products %}
+                                <div class="col-lg-4 col-md-6 mb-4">
+                                    {% if product.category.name == 'Bijoux' %}
+                                        <div class="card bijoux-card h-100 hover-lift animate-fadeInUp">
+                                    {% elseif product.category.name == 'Sacs' %}
+                                        <div class="card sacs-card h-100 hover-lift animate-fadeInUp">
+                                    {% else %}
+                                        <div class="card h-100 hover-lift animate-fadeInUp">
+                                    {% endif %}
+                                        {% if product.mainImage %}
+                                            <img src="{{ product.mainImage }}" class="card-img-top" alt="{{ product.name }}" loading="lazy" width="600" height="400">
+                                        {% else %}
+                                            <div class="card-img-top bg-light d-flex align-items-center justify-content-center">
+                                                <i class="fas fa-image text-muted" style="font-size: 3rem;"></i>
+                                            </div>
+                                        {% endif %}
+                                        
+                                        {% if product.isFeatured %}
+                                            <div class="position-absolute top-0 start-0 m-2">
+                                                <span class="badge bg-warning">
+                                                    <i class="fas fa-star me-1"></i>Mis en avant
+                                                </span>
+                                            </div>
+                                        {% endif %}
+                                        
+                                        <div class="card-body d-flex flex-column">
+                                            <h5 class="card-title">{{ product.name }}</h5>
+                                            <p class="card-text text-muted">
+                                                {{ product.description|slice(0, 100) }}{% if product.description|length > 100 %}...{% endif %}
+                                            </p>
+                                            
+                                            <div class="mt-auto">
+                                                <div class="d-flex justify-content-between align-items-center mb-3">
+                                                    <div class="price">
+                                                        {{ product.priceWithTva|number_format(2, ',', ' ') }} €
+                                                    </div>
+                                                    <small class="text-muted">
+                                                        <i class="fas fa-box me-1"></i>{{ product.stock }} en stock
+                                                    </small>
+                                                </div>
+                                                
+                                                <div class="d-flex gap-2">
+                                                    <a href="{{ path('app_product_show', {'id': product.id}) }}" class="btn btn-outline-primary flex-fill">
+                                                        <i class="fas fa-eye me-1"></i>Voir
+                                                    </a>
+                                                    <form method="post" action="{{ path('app_cart_add', {'id': product.id}) }}" class="flex-fill">
+                                                        <input type="hidden" name="_token" value="{{ csrf_token('cart_add_' ~ product.id) }}">
+                                                        <button type="submit" class="btn btn-primary w-100" {% if not product.isInStock %}disabled{% endif %}>
+                                                            <i class="fas fa-cart-plus me-1"></i>
+                                                            {% if product.isInStock %}Ajouter{% else %}Rupture{% endif %}
+                                                        </button>
+                                                    </form>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <div class="text-center py-5">
+                            <i class="fas fa-search text-muted" style="font-size: 4rem;"></i>
+                            <h3 class="mt-3">Aucun produit trouvé</h3>
+                            <p class="text-muted">
+                                {% if search %}
+                                    Aucun produit ne correspond à votre recherche "{{ search }}".
+                                {% else %}
+                                    Aucun produit disponible dans cette catégorie pour le moment.
+                                {% endif %}
+                            </p>
+                            <a href="{{ path('app_products') }}" class="btn btn-primary">
+                                <i class="fas fa-arrow-left me-2"></i>Retour à la boutique
+                            </a>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </section>
+{% endblock %} 

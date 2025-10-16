@@ -1,0 +1,70 @@
+version: '3.8'
+
+services:
+  # =============================================================================
+  # Base de données de test
+  # =============================================================================
+  test-database:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: boutique_test
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5433:5432"
+    volumes:
+      - test_db_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # =============================================================================
+  # Application de test
+  # =============================================================================
+  test-app:
+    build:
+      context: .
+      dockerfile: Dockerfile.test
+    environment:
+      - APP_ENV=test
+      - DATABASE_URL=postgresql://postgres:postgres@test-database:5432/boutique_test?serverVersion=16&charset=utf8
+    depends_on:
+      test-database:
+        condition: service_healthy
+    volumes:
+      - .:/app
+      - test_cache:/app/var/cache
+      - test_logs:/app/var/log
+    command: >
+      sh -c "
+        composer install --dev --no-interaction &&
+        php bin/console doctrine:database:create --env=test --if-not-exists &&
+        php bin/console doctrine:migrations:migrate --env=test --no-interaction &&
+        php bin/phpunit --coverage-html=coverage --coverage-clover=coverage.xml --log-junit=junit.xml
+      "
+
+  # =============================================================================
+  # Service d'analyse de qualité
+  # =============================================================================
+  code-quality:
+    build:
+      context: .
+      dockerfile: Dockerfile.test
+    environment:
+      - APP_ENV=test
+    volumes:
+      - .:/app
+    command: >
+      sh -c "
+        composer install --dev --no-interaction &&
+        vendor/bin/php-cs-fixer fix --dry-run --diff --verbose &&
+        vendor/bin/phpstan analyse --memory-limit=1G
+      "
+
+volumes:
+  test_db_data:
+  test_cache:
+  test_logs:
+
