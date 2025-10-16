@@ -51,9 +51,10 @@ RUN composer install --no-dev --no-interaction --prefer-dist --no-scripts
 ENV APP_ENV=prod
 ENV APP_DEBUG=0
 
-# Configuration des permissions
-RUN chown -R www-data:www-data /app/var
-RUN chmod -R 755 /app/public/uploads
+    # Création des dossiers nécessaires et configuration des permissions
+    RUN mkdir -p /app/var /app/public/uploads \
+        && chown -R www-data:www-data /app/var \
+        && chmod -R 755 /app/public/uploads
 
 # Configuration Nginx
 COPY docker/nginx.conf /etc/nginx/nginx.conf
